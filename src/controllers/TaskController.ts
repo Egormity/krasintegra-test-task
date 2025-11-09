@@ -7,10 +7,11 @@ import prisma from "../lib/prisma";
 export default class TaskController {
 	static readonly getMany = catchAsync(async (req, res) => {
 		const { completed, search, page = "1", size = "10" } = req.query;
+		console.log({ completed, search, page, size });
 		const data = await prisma.task.findMany({
 			where: {
 				completed: completed ? (completed === "true" ? true : false) : undefined,
-				title: search as string | undefined,
+				title: { contains: search as string | undefined },
 			},
 			take: +size,
 			skip: (+page - 1) * +size,
