@@ -2,6 +2,8 @@
 
 Express.js бекенд на TypeScript с Prisma ORM и Sqlite3 для TODO приложения.
 
+Пример коллекции Postman запросов в json файле.
+
 ## Setup
 
 ### .env - пример переменных
