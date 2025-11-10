@@ -3,7 +3,7 @@ import sendResJson from "../utils/sendResJson";
 import AppError from "../utils/AppError";
 import prisma from "../lib/prisma";
 
-// При расширении вынести в generic контроллер, чтобы не повторяться
+// In further development shared logic should be moved to a generic controller
 export default class TaskController {
 	static readonly getMany = catchAsync(async (req, res) => {
 		const { completed, search, page = "1", size = "10" } = req.query;
@@ -40,8 +40,8 @@ export default class TaskController {
 	//
 	static readonly putOneById = catchAsync(async (req, res, next) => {
 		const id = +req.params.id;
-		const doesExist = await prisma.task.findUnique({ where: { id } });
-		if (!doesExist) {
+		const existing = await prisma.task.findUnique({ where: { id } });
+		if (!existing) {
 			next(new AppError(404, `Item with id: "${id}" not found`));
 			return;
 		}
@@ -52,20 +52,20 @@ export default class TaskController {
 	//
 	static readonly patchOneById = catchAsync(async (req, res, next) => {
 		const id = +req.params.id;
-		const doesExist = await prisma.task.findUnique({ where: { id } });
-		if (!doesExist) {
+		const existing = await prisma.task.findUnique({ where: { id } });
+		if (!existing) {
 			next(new AppError(404, `Item with id: "${id}" not found`));
 			return;
 		}
-		const data = await prisma.task.update({ where: { id }, data: req.body });
+		const data = await prisma.task.update({ where: { id }, data: { ...existing, ...req.body } });
 		sendResJson({ res, data, statusCode: 200, message: "Task updated successfully" });
 	});
 
 	//
 	static readonly deleteOneById = catchAsync(async (req, res, next) => {
 		const id = +req.params.id;
-		const doesExist = await prisma.task.findUnique({ where: { id } });
-		if (!doesExist) {
+		const existing = await prisma.task.findUnique({ where: { id } });
+		if (!existing) {
 			next(new AppError(404, `Item with id: "${id}" not found`));
 			return;
 		}
