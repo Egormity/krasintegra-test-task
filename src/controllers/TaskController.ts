@@ -7,7 +7,6 @@ import prisma from "../lib/prisma";
 export default class TaskController {
 	static readonly getMany = catchAsync(async (req, res) => {
 		const { completed, search, page = "1", size = "10" } = req.query;
-		console.log({ completed, search, page, size });
 		const data = await prisma.task.findMany({
 			where: {
 				completed: completed ? (completed === "true" ? true : false) : undefined,
