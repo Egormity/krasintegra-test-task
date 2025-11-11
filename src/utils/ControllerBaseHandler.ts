@@ -4,23 +4,24 @@ import AppError from "./AppError";
 import catchAsync from "./catchAsync";
 import sendResJson from "./sendResJson";
 import { PrismaClient } from "../generated/prisma/client";
+import prisma from "../lib/prisma";
 
 //
-type TValidPrismaModelKeys = Exclude<keyof PrismaClient, `$${string}` | Symbol>;
-type TPrismaModel = PrismaClient[TValidPrismaModelKeys];
+type TValidPrismaModelName = Exclude<keyof PrismaClient, `$${string}` | Symbol>;
 
 //
 export default class ControllerBaseHandler {
 	static readonly getMany = ({
-		prismaModel,
+		prismaModelName,
 		usePagination = false,
 		getWhere,
 	}: {
-		prismaModel: TPrismaModel;
+		prismaModelName: TValidPrismaModelName;
 		usePagination?: boolean;
 		getWhere?: ({ req, res }: { req: Request; res: Response }) => any;
 	}) =>
 		catchAsync(async (req, res) => {
+			const prismaModel = prisma[prismaModelName];
 			const { page = "1", size = "10" } = req.query;
 			const data = await prismaModel.findMany({
 				where: getWhere?.({ req, res }),
@@ -32,13 +33,14 @@ export default class ControllerBaseHandler {
 
 	//
 	static readonly getOneById = ({
-		prismaModel,
-		itemName = "Item",
+		prismaModelName,
+		itemName = prismaModelName[0].toUpperCase() + prismaModelName.slice(1),
 	}: {
-		prismaModel: TPrismaModel;
+		prismaModelName: TValidPrismaModelName;
 		itemName?: string;
 	}) =>
 		catchAsync(async (req, res, next) => {
+			const prismaModel = prisma[prismaModelName];
 			const id = +req.params.id;
 			const data = await prismaModel.findUnique({ where: { id } });
 			if (!data) {
@@ -50,13 +52,14 @@ export default class ControllerBaseHandler {
 
 	//
 	static readonly postOne = ({
-		prismaModel,
-		itemName = "Item",
+		prismaModelName,
+		itemName = prismaModelName[0].toUpperCase() + prismaModelName.slice(1),
 	}: {
-		prismaModel: TPrismaModel;
+		prismaModelName: TValidPrismaModelName;
 		itemName?: string;
 	}) =>
 		catchAsync(async (req, res, next) => {
+			const prismaModel = prisma[prismaModelName];
 			if (!req.body.title) return next(new AppError(400, "Title is required"));
 			const data = await prismaModel.create({ data: req.body });
 			sendResJson({ res, data, statusCode: 201, message: `${itemName} created successfully` });
@@ -64,13 +67,14 @@ export default class ControllerBaseHandler {
 
 	//
 	static readonly putOneById = ({
-		prismaModel,
-		itemName = "Item",
+		prismaModelName,
+		itemName = prismaModelName[0].toUpperCase() + prismaModelName.slice(1),
 	}: {
-		prismaModel: TPrismaModel;
+		prismaModelName: TValidPrismaModelName;
 		itemName?: string;
 	}) =>
 		catchAsync(async (req, res, next) => {
+			const prismaModel = prisma[prismaModelName];
 			const id = +req.params.id;
 			const existing = await prismaModel.findUnique({ where: { id } });
 			if (!existing) {
@@ -83,13 +87,14 @@ export default class ControllerBaseHandler {
 
 	//
 	static readonly patchOneById = ({
-		prismaModel,
-		itemName = "Item",
+		prismaModelName,
+		itemName = prismaModelName[0].toUpperCase() + prismaModelName.slice(1),
 	}: {
-		prismaModel: TPrismaModel;
+		prismaModelName: TValidPrismaModelName;
 		itemName?: string;
 	}) =>
 		catchAsync(async (req, res, next) => {
+			const prismaModel = prisma[prismaModelName];
 			const id = +req.params.id;
 			const existing = await prismaModel.findUnique({ where: { id } });
 			if (!existing) {
@@ -102,13 +107,14 @@ export default class ControllerBaseHandler {
 
 	//
 	static readonly deleteOneById = ({
-		prismaModel,
-		itemName = "Item",
+		prismaModelName,
+		itemName = prismaModelName[0].toUpperCase() + prismaModelName.slice(1),
 	}: {
-		prismaModel: TPrismaModel;
+		prismaModelName: TValidPrismaModelName;
 		itemName?: string;
 	}) =>
 		catchAsync(async (req, res, next) => {
+			const prismaModel = prisma[prismaModelName];
 			const id = +req.params.id;
 			const existing = await prismaModel.findUnique({ where: { id } });
 			if (!existing) {
