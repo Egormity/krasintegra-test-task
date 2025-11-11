@@ -3,6 +3,11 @@ import { Request, Response } from "express";
 import AppError from "./AppError";
 import catchAsync from "./catchAsync";
 import sendResJson from "./sendResJson";
+import { PrismaClient } from "../generated/prisma/client";
+
+//
+type TValidPrismaModelKeys = Exclude<keyof PrismaClient, `$${string}` | Symbol>;
+type TPrismaModel = PrismaClient[TValidPrismaModelKeys];
 
 //
 export default class ControllerBaseHandler {
@@ -11,7 +16,7 @@ export default class ControllerBaseHandler {
 		usePagination = false,
 		getWhere,
 	}: {
-		prismaModel: any;
+		prismaModel: TPrismaModel;
 		usePagination?: boolean;
 		getWhere?: ({ req, res }: { req: Request; res: Response }) => any;
 	}) =>
@@ -30,7 +35,7 @@ export default class ControllerBaseHandler {
 		prismaModel,
 		itemName = "Item",
 	}: {
-		prismaModel: any;
+		prismaModel: TPrismaModel;
 		itemName?: string;
 	}) =>
 		catchAsync(async (req, res, next) => {
@@ -44,7 +49,13 @@ export default class ControllerBaseHandler {
 		});
 
 	//
-	static readonly postOne = ({ prismaModel, itemName = "Item" }: { prismaModel: any; itemName?: string }) =>
+	static readonly postOne = ({
+		prismaModel,
+		itemName = "Item",
+	}: {
+		prismaModel: TPrismaModel;
+		itemName?: string;
+	}) =>
 		catchAsync(async (req, res, next) => {
 			if (!req.body.title) return next(new AppError(400, "Title is required"));
 			const data = await prismaModel.create({ data: req.body });
@@ -56,7 +67,7 @@ export default class ControllerBaseHandler {
 		prismaModel,
 		itemName = "Item",
 	}: {
-		prismaModel: any;
+		prismaModel: TPrismaModel;
 		itemName?: string;
 	}) =>
 		catchAsync(async (req, res, next) => {
@@ -75,7 +86,7 @@ export default class ControllerBaseHandler {
 		prismaModel,
 		itemName = "Item",
 	}: {
-		prismaModel: any;
+		prismaModel: TPrismaModel;
 		itemName?: string;
 	}) =>
 		catchAsync(async (req, res, next) => {
@@ -94,7 +105,7 @@ export default class ControllerBaseHandler {
 		prismaModel,
 		itemName = "Item",
 	}: {
-		prismaModel: any;
+		prismaModel: TPrismaModel;
 		itemName?: string;
 	}) =>
 		catchAsync(async (req, res, next) => {
