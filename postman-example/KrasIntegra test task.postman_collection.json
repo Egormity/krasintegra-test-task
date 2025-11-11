@@ -28,13 +28,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/tasks?completed=false",
+							"raw": "{{baseUrl}}/tasks?completed=true",
 							"host": ["{{baseUrl}}"],
 							"path": ["tasks"],
 							"query": [
 								{
 									"key": "completed",
-									"value": "false"
+									"value": "true"
 								}
 							]
 						}
