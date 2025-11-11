@@ -31,4 +31,3 @@ pnpm run prisma:db-push
 # Запуск
 pnpm run dev
 ```
-"# krasintegra-test-task" 
